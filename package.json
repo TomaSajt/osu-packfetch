@@ -1,0 +1,22 @@
+{
+    "name": "osu-packfetch",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "start": "ts-node ./src"
+    },
+    "keywords": [
+        "osu",
+        "beatmap",
+        "pack",
+        "scraper"
+    ],
+    "author": "TomaSajt",
+    "license": "ISC",
+    "dependencies": {
+        "@types/node": "^18.0.0",
+        "dotenv": "^16.0.1",
+        "ts-node": "^10.8.1",
+        "typescript": "^4.7.4"
+    }
+}
