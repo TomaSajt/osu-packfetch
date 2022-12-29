@@ -1,4 +1,5 @@
 import { config as dotenv } from 'dotenv'
+import fs from 'fs/promises'
 import prompt from 'prompt'
 
 type Pack = {
@@ -7,13 +8,13 @@ type Pack = {
 }
 
 dotenv()
-main()
+main().catch(r => console.error("Error: " + r));
 
 const sleep = (time: number) => new Promise(res => setTimeout(res, time))
 
 async function main() {
     const SESSION_ID = process.env.SESSION_ID
-    if (!SESSION_ID) throw 'You need to set your SESSION_ID in the .env file.'
+    if (!SESSION_ID) throw 'You need to set your SESSION_ID in the `.env` file. See rename `.env.EXAMPLE` to `.env` and paste in your osu session cookie'
     prompt.start({ message: "osu-packfetch" })
     const pres = await prompt.get({
         properties: {
@@ -51,19 +52,21 @@ async function main() {
     const from = parseInt(pres.pageFrom.toString())
     const to = parseInt(pres.pageTo.toString())
     const packRegex = new RegExp(pres.packRegex.toString())
-    let str = ""
+    fs.writeFile("./links.txt", "")
     for (let i = from; i <= to; i++) {
         console.log(i);
         const packs = await getPacksForPage(i)
         for (const pack of packs) {
             if (!packRegex.test(pack.name)) continue;
             console.log(pack.name)
-            str += await getLinkForPackId(pack.id, SESSION_ID) + '\n'
+            let link = await getLinkForPackId(pack.id, SESSION_ID)
+            console.log(link);
+            await fs.appendFile("./links.txt", link + '\n')
             await sleep(1000)
         }
         await sleep(1000)
     }
-    console.log(str)
+    console.log("links.txt created, run dl-links.ps1 to add to mega-cmd download queue")
 }
 
 
@@ -91,6 +94,6 @@ async function getLinkForPackId(id: number, token: string) {
     try {
         return regex.exec(html)![1]
     } catch (error) {
-        throw "Can't get download links. Maybe you're being rate limited"
+        throw "Can't get download links. Maybe you're being rate limited or your SESSION_ID is wrong"
     }
 }

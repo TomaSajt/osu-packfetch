@@ -1,3 +1,5 @@
+/node_modules
+/mega-out
+*.txt
 .env
-node_modules
 *npm-lock.yaml
